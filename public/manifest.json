@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "Little Fox to Anki",
+  "version": "1.0",
+
+  "description": "Blah",
+  "homepage_url": "https://murch.nz",
+  "icons": {
+    "48": "icons/beasts-48.png"
+  },
+
+  "permissions": ["activeTab", "downloads", "*://chinese.littlefox.com/*/supplement/vocabulary/*"],
+
+  "browser_action": {
+    "default_title": "Little Fox to Anki Exporter",
+    "default_popup": "index.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://chinese.littlefox.com/*/supplement/vocabulary/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
