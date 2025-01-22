@@ -9,7 +9,11 @@
     "48": "icons/beasts-48.png"
   },
 
-  "permissions": ["activeTab", "downloads", "*://chinese.littlefox.com/*/supplement/vocabulary/*"],
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "*://chinese.littlefox.com/*/supplement/vocabulary/*"
+  ],
 
   "browser_action": {
     "default_title": "Little Fox to Anki Exporter",

@@ -1,0 +1,62 @@
+<!--Styling may be placed in the Styling Anki tab - but for ease of use let's add it here only-->
+<style>
+    /*desktop anki*/
+    body {
+        margin: 0;
+    }
+    /*ankidroid*/
+    #content {
+        margin: 0;
+    }
+</style>
+
+<script>
+    // if the custom element material-beautify-chinese-study is not a known element
+    //// manually create the html script to import the module so the browser has
+    //// the necessary logic to create element
+    if (!customElements.get('material-beautify-chinese-study')) {
+        console.log('Custom element does not exist - Creating script to pull it in');
+        var script = document.createElement('script');
+        script.setAttribute('id', 'import-script');
+        script.setAttribute('type', 'module');
+        // this will retrieve the newest, bleeding edge version of the package
+        // doing this could cause issues if something in the package is updated and the older
+        //// version no longer exists
+        // one solution is to require a specific version by adding @VERSION-NUMBER like the example below
+        //// https://cdn.jsdelivr.net/npm/beautify-chinese-study@1.1.48/dist/beautify-chinese-study/beautify-chinese-study.esm.js
+        // versions can be viewed here https://www.npmjs.com/package/beautify-chinese-study
+        script.setAttribute('src', 'https://cdn.jsdelivr.net/npm/beautify-chinese-study/dist/beautify-chinese-study/beautify-chinese-study.esm.js');
+        document.body.appendChild(script);
+    } else {
+        console.log('Custom element exists.');
+    }
+
+    // locate the custom element material-beautify-chinese-study on the DOM
+    //// if it has data - remove everything
+    var beautify = document.querySelector('material-beautify-chinese-study');
+    if (beautify !== null) {
+        beautify.remove();
+    }
+
+    // create a brand new material-beautify-chinese-study element and define
+    //// its attributes and attribute values
+    //// even though they are comments - Anki will still see this as an error
+    var beautify = document.createElement('material-beautify-chinese-study');
+    beautify.setAttribute('id', 'beautify');
+    beautify.setAttribute('primary-character', `{{text:Simplified}}`);
+    beautify.setAttribute('secondary-character', `{{text:Traditional}}`);
+    beautify.setAttribute('writing', `{{text:StrokeOrder}}`);
+    beautify.setAttribute('numbered-pinyin', `{{text:PinyinNumbered}}`);
+    beautify.setAttribute('primary-character-sentence', `{{text:SimplifiedSentence}}`);
+    beautify.setAttribute('secondary-character-sentence', `{{text:TraditionalSentence}}`);
+    beautify.setAttribute('sentence-numbered-pinyin', `{{text:SentencePinyin}}`);
+    beautify.setAttribute('meaning', `{{text:English}}`);
+    beautify.setAttribute('card-type', 'recognition');
+    beautify.setAttribute('card-orientation', 'question');
+    beautify.setAttribute('preferred-phonic', 'pinyin');
+    // add the element to the DOM body
+    document.body.appendChild(beautify);
+</script>
+
+<!--Always add audio and keep it invisible-->
+<div style="display:none;">{{Audio}}{{SentenceAudio}}</div>

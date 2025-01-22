@@ -40,9 +40,8 @@ function getVocabList() {
 console.log(getVocabList());
 
 (() => {
-    browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-        console.log(request.test);
-        sendResponse(getVocabList());
-    });
+  browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+    console.log(request.test);
+    sendResponse(getVocabList());
+  });
 })();
-

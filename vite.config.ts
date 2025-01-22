@@ -5,6 +5,7 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 
 // https://vite.dev/config/
 export default defineConfig({
+  assetsInclude: ["**/*.txt"],
   plugins: [
     react(),
     viteStaticCopy({
@@ -12,7 +13,7 @@ export default defineConfig({
         {
           src: "public/manifest.json",
           dest: ".",
-        },
+        }
       ],
     }),
   ],
@@ -25,13 +26,14 @@ export default defineConfig({
     sourcemap: true,
     outDir: "build",
     rollupOptions: {
+      external: ["open"],
       input: {
         main: "./index.html",
         content: "src/scripts/content.ts",
       },
       output: {
         entryFileNames: `[name].js`,
-        sourcemapExcludeSources: false
+        sourcemapExcludeSources: false,
       },
     },
   },
