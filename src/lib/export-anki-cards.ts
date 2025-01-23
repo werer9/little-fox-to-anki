@@ -1,6 +1,9 @@
 import { YankiConnect } from "yanki-connect";
 
-const exportAnkiCards = async (vocabList: VocabListEntry[]) => {
+const exportAnkiCards = async (
+  vocabList: VocabListEntry[],
+  setProgress: React.Dispatch<React.SetStateAction<number>>,
+) => {
   const client = new YankiConnect();
   const deckName = "Little Fox";
   const modelName = "Little Fox Note";
@@ -64,7 +67,8 @@ const exportAnkiCards = async (vocabList: VocabListEntry[]) => {
     console.log(result);
   }
 
-  for (const item of vocabList) {
+  for (const [index, item] of vocabList.entries()) {
+    setProgress(index);
     const filename = await client.media.storeMediaFile({
       deleteExisting: false,
       url: item.audioUrl,

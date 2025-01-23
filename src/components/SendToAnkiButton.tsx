@@ -3,36 +3,65 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
 import { useState } from "react";
 import Tab = browser.tabs.Tab;
+import { YankiConnect } from "yanki-connect";
 
 function SendToAnkiButton({ isSelected }: { isSelected: boolean }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [length, setLength] = useState<number>(0);
+
+  const sentToAnkiAction = async () => {
+    const client = new YankiConnect();
+    const isError = await client.deck
+      .deckNames()
+      .then(() => false)
+      .catch(() => true);
+
+    const send = (tabs: Tab[]) => {
+      if (isError) {
+        browser.tabs.sendMessage(tabs[0].id as number, {
+          command: "error",
+          errorMessage:
+            "Anki not running or Anki Connect plugin is not installed.",
+        });
+      } else {
+        browser.tabs
+          .sendMessage(tabs[0].id as number, {
+            command: "getVocabList",
+          })
+          .then(async (r: VocabListEntry[]) => {
+            if (isSelected) {
+              r = r.filter((item) => item.isSelected);
+            }
+
+            setLength(r.length);
+
+            setIsLoading(true);
+            exportAnkiCards(r, setProgress).then(() => setIsLoading(false));
+          });
+      }
+    };
+
+    browser.tabs.query({ active: true, currentWindow: true }).then(send);
+    browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+      browser.tabs.sendMessage(tabs[0].id as number, {
+        command: "error",
+        errorMessage: "Export completed",
+      });
+    });
+    window.close();
+  };
+
   return (
     <Button
-      variant={"outline"}
+      variant={"secondary"}
       disabled={isLoading}
-      onClick={async () => {
-        const send = (tabs: Tab[]) => {
-          browser.tabs
-            .sendMessage(tabs[0].id as number, {
-              test: "test",
-            })
-            .then(async (r: VocabListEntry[]) => {
-              if (isSelected) {
-                r = r.filter((item) => item.isSelected);
-              }
-
-              setIsLoading(true);
-              exportAnkiCards(r).then(() => setIsLoading(false));
-            });
-        };
-
-        browser.tabs.query({ active: true, currentWindow: true }).then(send);
-      }}
+      onClick={sentToAnkiAction}
     >
       {isLoading ? (
         <>
           <Loader2 className="animate-spin" />
-          Loading...
+          Loading ({progress}/{length}) ...
         </>
       ) : (
         "Send to Anki"

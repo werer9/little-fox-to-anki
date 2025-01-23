@@ -27,14 +27,14 @@ function App() {
               Only export selected vocabulary
             </label>
           </div>
-          <div>
+          <div className="grid grid-cols-1 space-y-2">
             <Button
-              variant={"outline"}
+              variant={"secondary"}
               onClick={async () => {
                 const send = (tabs: Tab[]) => {
                   browser.tabs
                     .sendMessage(tabs[0].id as number, {
-                      test: "test",
+                      command: "getVocabList",
                     })
                     .then(async (r: VocabListEntry[]) => {
                       const pkg = await createAnkiFile(r);
