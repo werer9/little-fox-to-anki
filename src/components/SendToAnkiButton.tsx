@@ -40,16 +40,11 @@ function SendToAnkiButton({ isSelected }: { isSelected: boolean }) {
             exportAnkiCards(r, setProgress).then(() => setIsLoading(false));
           });
       }
+
+      return tabs;
     };
 
-    browser.tabs.query({ active: true, currentWindow: true }).then(send);
-    browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-      browser.tabs.sendMessage(tabs[0].id as number, {
-        command: "error",
-        errorMessage: "Export completed",
-      });
-    });
-    window.close();
+    await browser.tabs.query({ active: true, currentWindow: true }).then(send);
   };
 
   return (
