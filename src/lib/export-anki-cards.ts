@@ -3,8 +3,8 @@ import { YankiConnect } from "yanki-connect";
 const exportAnkiCards = async (
   vocabList: VocabListEntry[],
   setProgress: React.Dispatch<React.SetStateAction<number>>,
+  client: YankiConnect,
 ) => {
-  const client = new YankiConnect();
   const deckName = "Little Fox";
   const modelName = "Little Fox Note";
   const frontTemplate = await fetch(

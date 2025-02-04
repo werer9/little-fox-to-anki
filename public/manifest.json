@@ -5,9 +5,6 @@
 
   "description": "Blah",
   "homepage_url": "https://murch.nz",
-  "icons": {
-    "48": "icons/beasts-48.png"
-  },
 
   "permissions": [
     "activeTab",
@@ -17,7 +14,8 @@
 
   "browser_action": {
     "default_title": "Little Fox to Anki Exporter",
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_icon": "little-fox.png"
   },
 
   "content_scripts": [

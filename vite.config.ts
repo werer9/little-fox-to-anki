@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import path from "path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
@@ -13,10 +15,14 @@ export default defineConfig({
         {
           src: "public/manifest.json",
           dest: ".",
-        }
+        },
       ],
     }),
   ],
+  test: {
+    globals: true,
+    environment: "jsdom",
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -32,6 +38,7 @@ export default defineConfig({
         content: "src/scripts/content.ts",
       },
       output: {
+        chunkFileNames: `[name].js`,
         entryFileNames: `[name].js`,
         sourcemapExcludeSources: false,
       },

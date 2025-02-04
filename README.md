@@ -1,50 +1,42 @@
-# React + TypeScript + Vite
+# Little Fox Vocabulary to Anki Exporter
+###### Last Updated: 3 Feb 2025
+## Introduction
+This project is a browser extension popup that exports vocabulary lists from Little Fox Chinese
+into [Anki](https://apps.ankiweb.net/), a popular SRS. 
+## Installation
+### Build and Install Manually
+#### Prerequisites
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- [Node v20.10.x or higher](https://nodejs.org/en/download)
 
-Currently, two official plugins are available:
+#### Steps
+1. Clone the repository or download the zip [here](https://github.com/werer9/little-fox-to-anki/archive/refs/heads/main.zip)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+   ```bash
+   git clone https://github.com/werer9/little-fox-to-anki.git
+   ```
+2. After cloning/unzipping open the repository
+    ```bash
+    cd little-fox-to-anki
+    ```
+3. Install package dependencies
+    ```bash
+   npm install
+   ```
+4. Build the extension
+   ```bash
+   npm run build
+   ```
+   The extension is now inside the build folder.
+5. Install the extension in your browser [Firefox](#firefox-installation) | [Chrome](#chrome-installation)
 
-## Expanding the ESLint configuration
+#### Firefox Installation
+1. Open Firefox
+2. Enter ```about:debugging``` into the URL bar
+3. Click ```This Firefox```
+4. Click ```Load Temporary Add-on```
+5. Open the build folder and select any file e.g. ```build/manifest.json```
+6. The extension will now show in the extensions toolbar
+#### Chrome Installation
+**NOT YET SUPPORTED**
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
-```
