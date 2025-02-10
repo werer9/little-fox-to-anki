@@ -36,7 +36,12 @@ into [Anki](https://apps.ankiweb.net/), a popular SRS.
 3. Click ```This Firefox```
 4. Click ```Load Temporary Add-on```
 5. Open the build folder and select any file e.g. ```build/manifest.json```
-6. The extension will now show in the extensions toolbar
+6. The extension will now be shown in the extensions toolbar
 #### Chrome Installation
-**NOT YET SUPPORTED**
+1. Open Chrome
+2. Enter ```chrome://extensions/``` into the URL bar
+3. Toggle developer mode to ON in the top right corner
+4. Click Load Unpacked in the top left corner
+5. Select the build folder created by the NPM ```build``` command 
+6. The extension will now be shown in the extensions toolbar
 

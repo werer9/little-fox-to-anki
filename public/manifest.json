@@ -1,18 +1,21 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Little Fox to Anki",
   "version": "1.0",
 
-  "description": "Blah",
-  "homepage_url": "https://murch.nz",
+  "description": "Extension to export Little Fox vocabulary to Anki",
+  "homepage_url": "https://github.com/werer9/little-fox-to-anki",
 
   "permissions": [
     "activeTab",
-    "downloads",
+    "downloads"
+  ],
+
+  "host_permissions": [
     "*://chinese.littlefox.com/*/supplement/vocabulary/*"
   ],
 
-  "browser_action": {
+  "action": {
     "default_title": "Little Fox to Anki Exporter",
     "default_popup": "index.html",
     "default_icon": "little-fox.png"
