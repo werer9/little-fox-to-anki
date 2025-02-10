@@ -44,4 +44,8 @@ into [Anki](https://apps.ankiweb.net/), a popular SRS.
 4. Click Load Unpacked in the top left corner
 5. Select the build folder created by the NPM ```build``` command 
 6. The extension will now be shown in the extensions toolbar
-
+## Usage
+In the add-ons current form, the window is a popup shown when a toolbar icon is clicked
+Unfortunately, Little Fox displays its vocabulary lists in a pop-up where the extensions toolbar icons aren't accessible
+A temporary work-around is to copy the URL in the popup and open it in a new tab in a normal browser window.
+More detailed user instructions will be added soon.
