@@ -36,9 +36,9 @@ function SendToAnkiButton({ isSelected }: { isSelected: boolean }) {
             setLength(r.length);
 
             setIsLoading(true);
-            exportAnkiCards(r, setProgress, client)
-              .then(() => setIsLoading(false))
-              .catch((error) => console.log(error));
+            exportAnkiCards(r, setProgress, client).then(() =>
+              setIsLoading(false),
+            );
           });
       }
 

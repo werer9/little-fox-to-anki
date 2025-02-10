@@ -46,6 +46,7 @@ export const sharedConfig: UserConfig = {
 export default defineConfig({
   ...sharedConfig,
   build: {
+    minify: false,
     emptyOutDir: false,
     sourcemap: true,
     outDir: "build",

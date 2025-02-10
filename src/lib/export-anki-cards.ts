@@ -69,36 +69,34 @@ const exportAnkiCards = async (
 
   for (const [index, item] of vocabList.entries()) {
     setProgress(index + 1);
-    const filename = await client.media.storeMediaFile({
-      deleteExisting: false,
+    const filename = client.media.storeMediaFile({
       url: item.audioUrl,
+      deleteExisting: false,
       filename: `_${item.chinese}.mp3`,
     });
 
-    const result = await client.note
-      .addNote({
-        note: {
-          deckName: deckName,
-          modelName: modelName,
-          fields: {
-            Simplified: item.chinese,
-            PinyinNumbered: item.pinyin,
-            SimplifiedSentence: item.exampleSentence,
-            English: item.english,
-            Audio: `[sound:${filename}]`,
-          },
-          options: {
-            allowDuplicate: false,
-            duplicateScope: "deck",
-            duplicateScopeOptions: {
-              deckName: deckName,
-              checkChildren: false,
-              checkAllModels: false,
-            },
+    const result = await client.note.addNote({
+      note: {
+        deckName: deckName,
+        modelName: modelName,
+        fields: {
+          Simplified: item.chinese,
+          PinyinNumbered: item.pinyin,
+          SimplifiedSentence: item.exampleSentence,
+          English: item.english,
+          Audio: `[sound:${filename}]`,
+        },
+        options: {
+          allowDuplicate: false,
+          duplicateScope: "deck",
+          duplicateScopeOptions: {
+            deckName: deckName,
+            checkChildren: false,
+            checkAllModels: false,
           },
         },
-      })
-      .catch((err) => console.error(err));
+      },
+    });
 
     console.log(result);
   }
