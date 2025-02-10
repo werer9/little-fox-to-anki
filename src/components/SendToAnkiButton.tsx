@@ -10,16 +10,15 @@ function SendToAnkiButton({ isSelected }: { isSelected: boolean }) {
   const [progress, setProgress] = useState<number>(0);
   const [length, setLength] = useState<number>(0);
 
-  const sentToAnkiAction = async () => {
-    const client = new YankiConnect();
-    const isError = await client.deck
-      .deckNames()
-      .then(() => false)
-      .catch(() => true);
+  const sentToAnkiAction = async (client: YankiConnect) => {
+    const send = async (tabs: Tab[], client: YankiConnect) => {
+      const isError = await client.deck
+        .deckNames()
+        .then(() => false)
+        .catch(() => true);
 
-    const send = (tabs: Tab[]) => {
       if (isError) {
-        browser.tabs.sendMessage(tabs[0].id as number, {
+        await browser.tabs.sendMessage(tabs[0].id as number, {
           command: "error",
           errorMessage:
             "Anki not running or Anki Connect plugin is not installed.",
@@ -37,21 +36,25 @@ function SendToAnkiButton({ isSelected }: { isSelected: boolean }) {
             setLength(r.length);
 
             setIsLoading(true);
-            exportAnkiCards(r, setProgress).then(() => setIsLoading(false));
+            exportAnkiCards(r, setProgress, client).then(() =>
+              setIsLoading(false),
+            );
           });
       }
 
       return tabs;
     };
 
-    await browser.tabs.query({ active: true, currentWindow: true }).then(send);
+    await browser.tabs
+      .query({ active: true, currentWindow: true })
+      .then((tabs) => send(tabs, client));
   };
 
   return (
     <Button
       variant={"secondary"}
       disabled={isLoading}
-      onClick={sentToAnkiAction}
+      onClick={() => sentToAnkiAction(new YankiConnect())}
     >
       {isLoading ? (
         <>

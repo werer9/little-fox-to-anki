@@ -1,3 +1,8 @@
+interface MessageRequest {
+  command: string;
+  errorMessage?: string; // Optional field for the "error" command
+}
+
 function getVocabList() {
   const tr = Array.from(document.getElementsByClassName("level3"));
   return tr.map((item) => {
@@ -40,7 +45,18 @@ function getVocabList() {
 console.log(getVocabList());
 
 (() => {
+  function isMessageRequest(message: unknown): message is MessageRequest {
+    return (
+      typeof message === "object" && message !== null && "command" in message
+    );
+  }
+
   browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+    if (!isMessageRequest(request)) {
+      console.warn("Received unexpected message format:", request);
+      return; // Exit early for invalid messages
+    }
+
     console.log(request.command);
     switch (request.command) {
       case "getVocabList":
@@ -49,6 +65,10 @@ console.log(getVocabList());
       case "error":
         alert(request.errorMessage);
         break;
+      default:
+        console.warn(`Unknown command: ${request.command}`);
     }
+
+    return true;
   });
 })();

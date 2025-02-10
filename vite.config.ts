@@ -1,10 +1,14 @@
+/// <reference types="vitest" />
+
 import path from "path";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { resolve } from "node:path";
+import { defineConfig, UserConfig } from "vite";
+import AutoImport from "unplugin-auto-import/vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
 // https://vite.dev/config/
-export default defineConfig({
+export const sharedConfig: UserConfig = {
   assetsInclude: ["**/*.txt"],
   plugins: [
     react(),
@@ -13,25 +17,46 @@ export default defineConfig({
         {
           src: "public/manifest.json",
           dest: ".",
-        }
+        },
       ],
     }),
+    AutoImport({
+      imports: [
+        {
+          "webextension-polyfill": [["=", "browser"]],
+        },
+      ],
+      dts: resolve("./src/auto-imports.d.ts"),
+    }),
   ],
+  optimizeDeps: {
+    include: ["webextension-polyfill"],
+  },
+  test: {
+    globals: true,
+    environment: "jsdom",
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+};
+
+export default defineConfig({
+  ...sharedConfig,
   build: {
+    minify: false,
+    emptyOutDir: false,
     sourcemap: true,
     outDir: "build",
     rollupOptions: {
       external: ["open"],
       input: {
         main: "./index.html",
-        content: "src/scripts/content.ts",
       },
       output: {
+        extend: true,
         entryFileNames: `[name].js`,
         sourcemapExcludeSources: false,
       },

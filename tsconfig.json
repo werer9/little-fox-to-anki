@@ -6,9 +6,10 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
+    "jsx": "react-jsx",
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "types": ["firefox"]
+  "types": ["firefox", "vitest/globals"]
 }
