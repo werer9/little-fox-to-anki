@@ -4,7 +4,10 @@ interface MessageRequest {
 }
 
 function getVocabList() {
-  const tr = Array.from(document.getElementsByClassName("level3"));
+  let tr = Array.from(document.getElementsByClassName("level3"));
+  if (tr.length == 0) {
+    tr = Array.from(document.getElementsByClassName("level1"));
+  }
   return tr.map((item) => {
     const isSelected = item
       .querySelector(".ck")
@@ -72,3 +75,49 @@ console.log(getVocabList());
     return true;
   });
 })();
+
+// content.ts
+
+// Function to handle the click event
+function handleVocabularyClick(event: MouseEvent): void {
+  const element = (event.target as HTMLElement).closest(".vocabulary");
+  if (!element) return;
+
+  const fc_id = element.getAttribute("fc_id");
+  if (!fc_id) {
+    console.error("fc_id attribute is missing on the .vocabulary element");
+    return;
+  }
+
+  // Prevent the default behavior (e.g., opening a popup)
+  event.preventDefault();
+  event.stopPropagation();
+
+  ViewVocab(fc_id);
+}
+
+// Function to open the vocabulary in a new tab
+async function ViewVocab(fcid: string): Promise<void> {
+  // Construct the URL
+  const url = `/en/supplement/vocabulary/${fcid}`;
+
+  try {
+    // Fallback to `window.open` if `browser.tabs.create` is not available
+    const newWindow = window.open(url, "_blank");
+    if (!newWindow) {
+      console.error("Popup blocked or failed to open.");
+      alert("Please allow popups for this site to open the vocabulary.");
+    }
+  } catch (error) {
+    console.error("Failed to open new tab:", error);
+    // Fallback to `window.open` if `browser.tabs.create` fails
+    const newWindow = window.open(url, "_blank");
+    if (!newWindow) {
+      console.error("Popup blocked or failed to open.");
+      alert("Please allow popups for this site to open the vocabulary.");
+    }
+  }
+}
+
+// Attach the event listener to the document
+document.addEventListener("click", handleVocabularyClick, true);
