@@ -8,8 +8,7 @@
 
   "permissions": [
     "activeTab",
-    "downloads",
-    "tabs"
+    "downloads"
   ],
 
   "host_permissions": [

@@ -102,17 +102,11 @@ async function ViewVocab(fcid: string): Promise<void> {
   const url = `/en/supplement/vocabulary/${fcid}`;
 
   try {
-    // Try using the `browser.tabs.create` API (for extensions)
-    if (typeof browser !== "undefined" && browser.tabs && browser.tabs.create) {
-      const tab = await browser.tabs.create({ url: url });
-      console.log("New tab opened with ID:", tab.id);
-    } else {
-      // Fallback to `window.open` if `browser.tabs.create` is not available
-      const newWindow = window.open(url, "_blank");
-      if (!newWindow) {
-        console.error("Popup blocked or failed to open.");
-        alert("Please allow popups for this site to open the vocabulary.");
-      }
+    // Fallback to `window.open` if `browser.tabs.create` is not available
+    const newWindow = window.open(url, "_blank");
+    if (!newWindow) {
+      console.error("Popup blocked or failed to open.");
+      alert("Please allow popups for this site to open the vocabulary.");
     }
   } catch (error) {
     console.error("Failed to open new tab:", error);
