@@ -4,7 +4,10 @@ interface MessageRequest {
 }
 
 function getVocabList() {
-  const tr = Array.from(document.getElementsByClassName("level3"));
+  let tr = Array.from(document.getElementsByClassName("level3"));
+  if (tr.length == 0) {
+    tr = Array.from(document.getElementsByClassName("level1"));
+  }
   return tr.map((item) => {
     const isSelected = item
       .querySelector(".ck")
