@@ -23,3 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 /src/auto-imports.d.ts
+/web-ext-artifacts/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

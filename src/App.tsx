@@ -4,9 +4,11 @@ import { useState } from "react";
 import { ThemeProvider } from "@/components/theme-provider.tsx";
 import SendToAnkiButton from "@/components/SendToAnkiButton.tsx";
 import CreateAPKGButton from "@/components/CreateAPKGButton.tsx";
+import { getConfig } from "@/config.ts";
 
 function App() {
   const [isSelected, setIsSelected] = useState<boolean>(false);
+  const { createApkgEnabled } = getConfig();
   return (
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -26,7 +28,7 @@ function App() {
             </label>
           </div>
           <div className="grid grid-cols-1 space-y-2">
-            {import.meta.env.CREATE_APKG_ENABLED && <CreateAPKGButton />}
+            {createApkgEnabled && <CreateAPKGButton />}
             <SendToAnkiButton isSelected={isSelected} />
           </div>
         </div>

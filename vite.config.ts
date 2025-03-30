@@ -35,6 +35,12 @@ export const sharedConfig: UserConfig = {
   test: {
     globals: true,
     environment: "jsdom",
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "lcov"],
+      include: ["**/src"],
+      exclude: ["**/src/components/ui/**"],
+    },
   },
   resolve: {
     alias: {

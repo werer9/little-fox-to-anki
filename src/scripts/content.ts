@@ -3,7 +3,7 @@ interface MessageRequest {
   errorMessage?: string; // Optional field for the "error" command
 }
 
-function getVocabList() {
+export function getVocabList() {
   let tr = Array.from(document.getElementsByClassName("level3"));
   if (tr.length == 0) {
     tr = Array.from(document.getElementsByClassName("level1"));
@@ -16,7 +16,7 @@ function getVocabList() {
     const match = item
       .querySelector(".snd")
       ?.querySelector<HTMLAnchorElement>("a")
-      ?.href.match(/'([^']*)'/);
+      ?.href.match(/Play1\('([^?]*\.mp3[^']*)/);
     let audioLink = null;
     if (match && match[1]) {
       audioLink = `http:${match[1]}`;
@@ -79,7 +79,7 @@ console.log(getVocabList());
 // content.ts
 
 // Function to handle the click event
-function handleVocabularyClick(event: MouseEvent): void {
+export function handleVocabularyClick(event: MouseEvent): void {
   const element = (event.target as HTMLElement).closest(".vocabulary");
   if (!element) return;
 
@@ -93,11 +93,11 @@ function handleVocabularyClick(event: MouseEvent): void {
   event.preventDefault();
   event.stopPropagation();
 
-  ViewVocab(fc_id);
+  viewVocab(fc_id);
 }
 
 // Function to open the vocabulary in a new tab
-async function ViewVocab(fcid: string): Promise<void> {
+export async function viewVocab(fcid: string): Promise<void> {
   // Construct the URL
   const url = `/en/supplement/vocabulary/${fcid}`;
 
