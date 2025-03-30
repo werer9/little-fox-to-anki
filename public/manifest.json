@@ -6,6 +6,14 @@
   "description": "Extension to export Little Fox vocabulary to Anki",
   "homepage_url": "https://github.com/werer9/little-fox-to-anki",
 
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{df4ce16c-c93e-4ea4-ae16-a6e87d1ea1b7}",
+      "strict_min_version": "58.0"
+    }
+  },
+
+
   "permissions": [
     "activeTab",
     "downloads"
