@@ -75,40 +75,43 @@ const exportAnkiCards = async (
       filename: `_${item.chinese}.mp3`,
     });
 
-    const result = await client.note.addNote({
-      note: {
-        deckName: deckName,
-        modelName: modelName,
-        fields: {
-          Simplified: item.chinese,
-          PinyinNumbered: item.pinyin,
-          SimplifiedSentence: item.exampleSentence,
-          English: item.english,
-          Audio: `[sound:${filename}]`,
-        },
-        options: {
-          allowDuplicate: false,
-          duplicateScope: "deck",
-          duplicateScopeOptions: {
-            deckName: deckName,
-            checkChildren: false,
-            checkAllModels: false,
+    const result = await client.note
+      .addNote({
+        note: {
+          deckName: deckName,
+          modelName: modelName,
+          fields: {
+            Simplified: item.chinese,
+            PinyinNumbered: item.pinyin,
+            SimplifiedSentence: item.exampleSentence,
+            English: item.english,
+            Audio: `[sound:${filename}]`,
+          },
+          options: {
+            allowDuplicate: false,
+            duplicateScope: "deck",
+            duplicateScopeOptions: {
+              deckName: deckName,
+              checkChildren: false,
+              checkAllModels: false,
+            },
           },
         },
-      },
-    });
+      })
+      .catch((err) => console.log(err));
 
     console.log(result);
   }
 
-  browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-    browser.tabs
-      .sendMessage(tabs[0].id as number, {
+  browser.tabs
+    .query({ active: true, currentWindow: true })
+    .then((tabs) => {
+      browser.tabs.sendMessage(tabs[0].id as number, {
         command: "error",
         errorMessage: "Export completed",
-      })
-      .catch((error) => console.log(error));
-  });
+      });
+    })
+    .catch((error) => console.log(error));
 };
 
 export default exportAnkiCards;
