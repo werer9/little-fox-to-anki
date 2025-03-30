@@ -101,7 +101,7 @@ describe("getVocabList", () => {
     expect(result).toEqual([
       {
         isSelected: true,
-        audioUrl: "http://example.com/audio.mp3",
+        audioUrl: "http://cdn.littlefox.co.kr/cn/vocab/6/example.mp3?123456",
         chinese: "你好",
         pinyin: "nǐ hǎo",
         english: "Hello",
@@ -237,7 +237,7 @@ function createMockVocabularyElement(
 
   const mockAudioLink = {
     href: audioLink
-      ? `javascript:playSound('${audioLink.replace("http:", "")}')`
+      ? "javascript:Play1('//cdn.littlefox.co.kr/cn/vocab/6/example.mp3?123456','15');"
       : "",
     match: vi
       .fn()

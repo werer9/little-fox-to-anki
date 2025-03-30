@@ -69,11 +69,15 @@ const exportAnkiCards = async (
 
   for (const [index, item] of vocabList.entries()) {
     setProgress(index + 1);
-    const filename = client.media.storeMediaFile({
-      url: item.audioUrl,
-      deleteExisting: false,
-      filename: `_${item.chinese}.mp3`,
-    });
+    const filename = await client.media
+      .storeMediaFile({
+        url: item.audioUrl,
+        deleteExisting: false,
+        filename: `_${item.chinese}.mp3`,
+      })
+      .catch((err) => {
+        console.error(`Could not load audio file: ${err}`);
+      });
 
     const result = await client.note
       .addNote({

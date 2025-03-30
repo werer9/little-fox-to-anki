@@ -16,7 +16,7 @@ export function getVocabList() {
     const match = item
       .querySelector(".snd")
       ?.querySelector<HTMLAnchorElement>("a")
-      ?.href.match(/'([^']*)'/);
+      ?.href.match(/Play1\('([^?]*\.mp3[^']*)/);
     let audioLink = null;
     if (match && match[1]) {
       audioLink = `http:${match[1]}`;
