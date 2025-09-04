@@ -20,14 +20,6 @@ export const sharedConfig: UserConfig = {
         },
       ],
     }),
-    AutoImport({
-      imports: [
-        {
-          "webextension-polyfill": [["=", "browser"]],
-        },
-      ],
-      dts: resolve("./src/auto-imports.d.ts"),
-    }),
   ],
   optimizeDeps: {
     include: ["webextension-polyfill"],
@@ -49,23 +41,44 @@ export const sharedConfig: UserConfig = {
   },
 };
 
-export default defineConfig({
-  ...sharedConfig,
-  build: {
-    minify: false,
-    emptyOutDir: false,
-    sourcemap: true,
-    outDir: "build",
-    rollupOptions: {
-      external: ["open"],
-      input: {
-        main: "./index.html",
-      },
-      output: {
-        extend: true,
-        entryFileNames: `[name].js`,
-        sourcemapExcludeSources: false,
+export default defineConfig(({ command, mode }) => {
+  const plugins = [...sharedConfig.plugins!];
+
+  // Disable AutoImport during test mode and when running vitest
+  const isTestMode =
+    mode === "test" || (command === "serve" && process.env.VITEST);
+
+  if (!isTestMode) {
+    plugins.push(
+      AutoImport({
+        imports: [
+          {
+            "webextension-polyfill": [["=", "browser"]],
+          },
+        ],
+        dts: resolve("./src/auto-imports.d.ts"),
+      }),
+    );
+  }
+
+  return {
+    ...sharedConfig,
+    build: {
+      minify: false,
+      emptyOutDir: false,
+      sourcemap: true,
+      outDir: "build",
+      rollupOptions: {
+        external: ["open"],
+        input: {
+          main: "./index.html",
+        },
+        output: {
+          extend: true,
+          entryFileNames: `[name].js`,
+          sourcemapExcludeSources: false,
+        },
       },
     },
-  },
+  };
 });

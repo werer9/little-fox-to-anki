@@ -1,54 +1,10 @@
-interface MessageRequest {
-  command: string;
-  errorMessage?: string; // Optional field for the "error" command
-}
+import { Command } from "@/types/command";
+import { AnkiMessage } from "@/types/anki-message.ts";
+import { LittleFoxVocabContentService } from "@/service/little-fox-vocab-content-service.ts";
+import { ContentService } from "@/service/content-service.ts";
 
-export function getVocabList() {
-  let tr = Array.from(document.getElementsByClassName("level3"));
-  if (tr.length == 0) {
-    tr = Array.from(document.getElementsByClassName("level1"));
-  }
-  return tr.map((item) => {
-    const isSelected = item
-      .querySelector(".ck")
-      ?.querySelector(".voca_cont_bt_che_box")
-      ?.querySelector<HTMLInputElement>(".wordCheck")?.checked;
-    const match = item
-      .querySelector(".snd")
-      ?.querySelector<HTMLAnchorElement>("a")
-      ?.href.match(/Play1\('([^?]*\.mp3[^']*)/);
-    let audioLink = null;
-    if (match && match[1]) {
-      audioLink = `http:${match[1]}`;
-    }
-    const words = item
-      .querySelector(".wordtxt")
-      ?.querySelector(".word_text")?.textContent;
-    const pinyin = item
-      .querySelector(".wordtxt")
-      ?.querySelector(".word_sound")?.textContent;
-    const meaning = item
-      .querySelector(".exm")
-      ?.querySelector(".mean_text")?.textContent;
-    const example = item
-      .querySelector(".exm")
-      ?.querySelector<HTMLDivElement>(".vc_example")?.innerText;
-
-    return <VocabListEntry>{
-      isSelected: isSelected,
-      audioUrl: audioLink,
-      chinese: words,
-      pinyin: pinyin,
-      english: meaning,
-      exampleSentence: example,
-    };
-  });
-}
-
-console.log(getVocabList());
-
-(() => {
-  function isMessageRequest(message: unknown): message is MessageRequest {
+export function contentFunction(contentService: ContentService) {
+  function isMessageRequest(message: unknown): message is AnkiMessage {
     return (
       typeof message === "object" && message !== null && "command" in message
     );
@@ -62,10 +18,10 @@ console.log(getVocabList());
 
     console.log(request.command);
     switch (request.command) {
-      case "getVocabList":
-        sendResponse(getVocabList());
+      case Command.GetVocabList:
+        sendResponse(contentService.getVocabList(document));
         break;
-      case "error":
+      case Command.Error:
         alert(request.errorMessage);
         break;
       default:
@@ -74,11 +30,8 @@ console.log(getVocabList());
 
     return true;
   });
-})();
+}
 
-// content.ts
-
-// Function to handle the click event
 export function handleVocabularyClick(event: MouseEvent): void {
   const element = (event.target as HTMLElement).closest(".vocabulary");
   if (!element) return;
@@ -121,3 +74,7 @@ export async function viewVocab(fcid: string): Promise<void> {
 
 // Attach the event listener to the document
 document.addEventListener("click", handleVocabularyClick, true);
+
+const contentService: ContentService = new LittleFoxVocabContentService();
+console.log(contentService.getVocabList(document));
+contentFunction(contentService);

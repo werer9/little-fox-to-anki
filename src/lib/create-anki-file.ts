@@ -8,6 +8,8 @@ import {
   Media,
 } from "anki-apkg-generator";
 
+import { VocabListEntry } from "@/types/vocab-list-entry.ts";
+
 const createAnkiFile = async (vocabList: VocabListEntry[]) => {
   const fields = [
     { name: "Chinese" },

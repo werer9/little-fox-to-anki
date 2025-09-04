@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { useState } from "react";
 import Tab = browser.tabs.Tab;
 import { YankiConnect } from "yanki-connect";
+import { VocabListEntry } from "@/types/vocab-list-entry.ts";
 
 function SendToAnkiButton({ isSelected }: { isSelected: boolean }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);

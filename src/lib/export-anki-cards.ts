@@ -1,121 +1,48 @@
 import { YankiConnect } from "yanki-connect";
+import { VocabListEntry } from "@/types/vocab-list-entry.ts";
+import { AnkiConfig } from "@/types/anki-config.ts";
+import { Command } from "@/types/command";
+import { PolyfillBrowserService } from "@/service/polyfill-browser-service.ts";
+import { BrowserService } from "@/service/browser-service.ts";
+import { YankiConnectService } from "@/service/yanki-connect-service.ts";
+import { AnkiService } from "@/service/anki-service.ts";
 
 const exportAnkiCards = async (
   vocabList: VocabListEntry[],
   setProgress: React.Dispatch<React.SetStateAction<number>>,
   client: YankiConnect,
 ) => {
-  const deckName = "Little Fox";
-  const modelName = "Little Fox Note";
-  const frontTemplate = await fetch(
-    browser.runtime.getURL("recognition_card_front.txt"),
-  )
-    .then((res) => {
-      console.log(res);
-      return res.text();
-    })
-    .catch((err) => {
-      console.log(err.message);
-      return "There was an error";
-    });
-  const backTemplate = await fetch(
-    browser.runtime.getURL("recognition_card_back.txt"),
-  )
-    .then((res) => {
-      console.log(res);
-      return res.text();
-    })
-    .catch((err) => {
-      console.log(err.message);
-      return "There was an error";
-    });
+  const ankiConfig: AnkiConfig = {
+    deckName: "Little Fox",
+    modelName: "Little Fox Note",
+    frontCard: "recognition_card_front.html",
+    backCard: "recognition_card_back.html",
+  };
 
-  const models = await client.model.modelNames();
+  const browserService: BrowserService = new PolyfillBrowserService();
+  const ankiService: AnkiService = new YankiConnectService(client);
+
+  const frontTemplate = browserService.getTemplate(ankiConfig.frontCard);
+  const backTemplate = browserService.getTemplate(ankiConfig.backCard);
+
+  const models = await ankiService.getModels();
   console.log(models); // ["Your", "Deck", "Names", "Here"]
-  if (!models.includes(modelName)) {
-    const result = await client.model
-      .createModel({
-        modelName: modelName,
-        inOrderFields: [
-          "Simplified",
-          "Traditional",
-          "StrokeOrder",
-          "PinyinNumbered",
-          "SimplifiedSentence",
-          "TraditionalSentence",
-          "SentencePinyin",
-          "English",
-          "Audio",
-          "SentenceAudio",
-        ],
-        cardTemplates: [
-          {
-            Name: "Recognition",
-            Front: frontTemplate,
-            Back: backTemplate,
-          },
-        ],
-      })
-      .catch((err) => console.log(err));
+  await ankiService.createModel(
+    ankiConfig.modelName,
+    await frontTemplate,
+    await backTemplate,
+  );
 
-    console.log(result);
-  }
-
-  const deckNames = await client.deck.deckNames();
-  if (!deckNames.includes(deckName)) {
-    const result = await client.deck.createDeck({ deck: deckName });
-    console.log(result);
-  }
+  await ankiService.createDeck(ankiConfig.deckName);
 
   for (const [index, item] of vocabList.entries()) {
     setProgress(index + 1);
-    const filename = await client.media
-      .storeMediaFile({
-        url: item.audioUrl,
-        deleteExisting: false,
-        filename: `_${item.chinese}.mp3`,
-      })
-      .catch((err) => {
-        console.error(`Could not load audio file: ${err}`);
-      });
+    const filename = ankiService.storeMedia(item);
 
-    const result = await client.note
-      .addNote({
-        note: {
-          deckName: deckName,
-          modelName: modelName,
-          fields: {
-            Simplified: item.chinese,
-            PinyinNumbered: item.pinyin,
-            SimplifiedSentence: item.exampleSentence,
-            English: item.english,
-            Audio: `[sound:${filename}]`,
-          },
-          options: {
-            allowDuplicate: false,
-            duplicateScope: "deck",
-            duplicateScopeOptions: {
-              deckName: deckName,
-              checkChildren: false,
-              checkAllModels: false,
-            },
-          },
-        },
-      })
-      .catch((err) => console.log(err));
+    await ankiService.addNote(ankiConfig, item, (await filename) ?? "");
 
-    console.log(result);
+    browserService.sendMessage(Command.Error, "Export completed");
   }
-
-  browser.tabs
-    .query({ active: true, currentWindow: true })
-    .then((tabs) => {
-      browser.tabs.sendMessage(tabs[0].id as number, {
-        command: "error",
-        errorMessage: "Export completed",
-      });
-    })
-    .catch((error) => console.log(error));
 };
 
 export default exportAnkiCards;

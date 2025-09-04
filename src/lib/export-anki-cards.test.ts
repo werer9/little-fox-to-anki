@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import exportAnkiCards from "./export-anki-cards";
 import type { YankiConnect } from "yanki-connect";
+import { VocabListEntry } from "@/types/vocab-list-entry.ts";
 
 // Mock the browser runtime API
 vi.mock("webextension-polyfill", () => ({
@@ -142,10 +143,10 @@ describe("exportAnkiCards", () => {
 
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(fetch).toHaveBeenCalledWith(
-      "chrome-extension://mock-id/recognition_card_front.txt",
+      "chrome-extension://mock-id/recognition_card_front.html",
     );
     expect(fetch).toHaveBeenCalledWith(
-      "chrome-extension://mock-id/recognition_card_back.txt",
+      "chrome-extension://mock-id/recognition_card_back.html",
     );
   });
 
