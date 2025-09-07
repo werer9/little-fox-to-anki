@@ -1,9 +1,6 @@
 import { sharedConfig } from "./vite.config";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import AutoImport from "unplugin-auto-import/vite";
-import { resolve } from "node:path";
-import { viteStaticCopy } from "vite-plugin-static-copy";
 
 export default defineConfig({
   ...sharedConfig,
