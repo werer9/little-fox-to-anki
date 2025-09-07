@@ -38,7 +38,7 @@ const createAnkiFile = async (vocabList: VocabListEntry[]) => {
 
   for (const item of vocabList) {
     const note = new Note(model);
-    const media: Awaited<Promise<Media>> = await fetch(item.audioUrl)
+    const media: Awaited<Promise<Media>> = await fetch(item.audioUrl || "")
       .then(async (response) => {
         if (!response.ok) {
           throw new Error(`HTTP error, status = ${response.status}`);

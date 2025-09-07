@@ -1,5 +1,6 @@
 import createAnkiFile from "@/lib/create-anki-file.ts";
 import { Button } from "@/components/ui/button.tsx";
+import { VocabListEntry } from "@/types/vocab-list-entry.ts";
 import Tab = browser.tabs.Tab;
 
 function CreateAPKGButton() {

@@ -72,12 +72,15 @@ export async function viewVocab(fcid: string): Promise<void> {
   }
 }
 
-// Don't execute this code during tests
-if (process.env.NODE_ENV !== "test") {
+export function initializeContentScript(): void {
   // Attach the event listener to the document
   document.addEventListener("click", handleVocabularyClick, true);
 
   const contentService: ContentService = new LittleFoxVocabContentService();
   console.log(contentService.getVocabList(document));
   contentFunction(contentService);
+}
+
+if (typeof browser !== "undefined") {
+  initializeContentScript();
 }
