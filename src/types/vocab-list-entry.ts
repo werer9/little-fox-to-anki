@@ -1,8 +1,8 @@
-type VocabListEntry = {
+export interface VocabListEntry {
   isSelected: boolean;
-  audioUrl: string;
+  audioUrl: string | null;
   chinese: string;
   pinyin: string;
   english: string;
   exampleSentence: string;
-};
+}

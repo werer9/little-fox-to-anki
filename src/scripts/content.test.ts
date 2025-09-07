@@ -1,15 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { getVocabList, handleVocabularyClick, viewVocab } from "./content";
+import * as WebExtensionBrowser from "webextension-polyfill";
+import { mockDeep } from "vitest-mock-extended";
+import { handleVocabularyClick, viewVocab } from "./content";
+
+const mockBrowser = mockDeep<typeof WebExtensionBrowser>();
 
 // Mock the browser runtime API
 vi.mock("webextension-polyfill", () => ({
-  default: {
-    runtime: {
-      onMessage: {
-        addListener: vi.fn(),
-      },
-    },
-  },
+  ...mockBrowser,
+  default: mockBrowser,
 }));
 
 // Mock document and window methods
@@ -34,106 +33,12 @@ beforeEach(() => {
   window.alert = vi.fn();
   vi.stubGlobal("document", mockDocument);
   vi.stubGlobal("window", mockWindow);
+  vi.stubGlobal("browser", mockBrowser);
   vi.clearAllMocks();
 });
 
 afterEach(() => {
   vi.restoreAllMocks();
-});
-
-describe("getVocabList", () => {
-  it("should return an empty array when no elements are found", () => {
-    mockDocument.getElementsByClassName.mockReturnValue([]);
-    const result = getVocabList();
-    expect(result).toEqual([]);
-  });
-
-  it("should prioritize level3 elements over level1", () => {
-    const mockLevel3Element = createMockVocabularyElement();
-    const mockLevel1Element = createMockVocabularyElement();
-
-    mockDocument.getElementsByClassName.mockImplementation(
-      (className: string) => {
-        if (className === "level3") return [mockLevel3Element];
-        if (className === "level1") return [mockLevel1Element];
-        return [];
-      },
-    );
-
-    const result = getVocabList();
-    expect(result.length).toBe(1);
-    expect(mockDocument.getElementsByClassName).toHaveBeenCalledWith("level3");
-    expect(mockDocument.getElementsByClassName).not.toHaveBeenCalledWith(
-      "level1",
-    );
-  });
-
-  it("should fall back to level1 when no level3 elements are found", () => {
-    const mockLevel1Element = createMockVocabularyElement();
-
-    mockDocument.getElementsByClassName.mockImplementation(
-      (className: string) => {
-        if (className === "level3") return [];
-        if (className === "level1") return [mockLevel1Element];
-        return [];
-      },
-    );
-
-    const result = getVocabList();
-    expect(result.length).toBe(1);
-    expect(mockDocument.getElementsByClassName).toHaveBeenCalledWith("level3");
-    expect(mockDocument.getElementsByClassName).toHaveBeenCalledWith("level1");
-  });
-
-  it("should extract all vocabulary data correctly", () => {
-    const mockElement = createMockVocabularyElement({
-      isSelected: true,
-      audioLink: "http://example.com/audio.mp3",
-      words: "你好",
-      pinyin: "nǐ hǎo",
-      meaning: "Hello",
-      example: "你好吗？",
-    });
-
-    mockDocument.getElementsByClassName.mockReturnValue([mockElement]);
-
-    const result = getVocabList();
-    expect(result).toEqual([
-      {
-        isSelected: true,
-        audioUrl: "http://cdn.littlefox.co.kr/cn/vocab/6/example.mp3?123456",
-        chinese: "你好",
-        pinyin: "nǐ hǎo",
-        english: "Hello",
-        exampleSentence: "你好吗？",
-      },
-    ]);
-  });
-
-  it("should handle missing optional fields", () => {
-    const mockElement = createMockVocabularyElement({
-      isSelected: false,
-      audioLink: null,
-      words: "你好",
-      pinyin: null,
-      meaning: null,
-      example: null,
-    });
-
-    mockDocument.getElementsByClassName.mockReturnValue([mockElement]);
-
-    const result = getVocabList();
-    expect(result).toEqual([
-      {
-        isSelected: false,
-        audioUrl: null,
-        chinese: "你好",
-        pinyin: null,
-        english: null,
-        exampleSentence: null,
-      },
-    ]);
-  });
 });
 
 describe("handleVocabularyClick", () => {
@@ -202,93 +107,3 @@ describe("viewVocab", () => {
     );
   });
 });
-
-describe("message listener", () => {
-  it("should handle getVocabList command", () => {
-    // This would require more extensive mocking of the browser API
-    // For now, we can just verify the exported functions
-    expect(typeof getVocabList).toBe("function");
-  });
-});
-
-// Helper function to create mock vocabulary elements
-function createMockVocabularyElement(
-  options: {
-    isSelected?: boolean;
-    audioLink?: string | null;
-    words?: string | null;
-    pinyin?: string | null;
-    meaning?: string | null;
-    example?: string | null;
-  } = {},
-) {
-  const {
-    isSelected = false,
-    audioLink = "http://example.com/audio.mp3",
-    words = "你好",
-    pinyin = "nǐ hǎo",
-    meaning = "Hello",
-    example = "你好吗？",
-  } = options;
-
-  const mockCheckbox = {
-    checked: isSelected,
-  };
-
-  const mockAudioLink = {
-    href: audioLink
-      ? "javascript:Play1('//cdn.littlefox.co.kr/cn/vocab/6/example.mp3?123456','15');"
-      : "",
-    match: vi
-      .fn()
-      .mockReturnValue(audioLink ? ["", audioLink.replace("http:", "")] : null),
-  };
-
-  return {
-    querySelector: vi.fn().mockImplementation((selector: string) => {
-      if (selector === ".ck") {
-        return {
-          querySelector: vi.fn().mockImplementation((subSelector: string) => {
-            if (subSelector === ".voca_cont_bt_che_box") {
-              return {
-                querySelector: vi
-                  .fn()
-                  .mockImplementation((finalSelector: string) => {
-                    if (finalSelector === ".wordCheck") return mockCheckbox;
-                    return null;
-                  }),
-              };
-            }
-            return null;
-          }),
-        };
-      }
-      if (selector === ".snd") {
-        return {
-          querySelector: vi
-            .fn()
-            .mockReturnValue(audioLink ? mockAudioLink : null),
-        };
-      }
-      if (selector === ".wordtxt") {
-        return {
-          querySelector: vi.fn().mockImplementation((subSelector: string) => {
-            if (subSelector === ".word_text") return { textContent: words };
-            if (subSelector === ".word_sound") return { textContent: pinyin };
-            return null;
-          }),
-        };
-      }
-      if (selector === ".exm") {
-        return {
-          querySelector: vi.fn().mockImplementation((subSelector: string) => {
-            if (subSelector === ".mean_text") return { textContent: meaning };
-            if (subSelector === ".vc_example") return { innerText: example };
-            return null;
-          }),
-        };
-      }
-      return null;
-    }),
-  };
-}

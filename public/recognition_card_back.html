@@ -1,0 +1,81 @@
+<div class="chinese-card">
+    <div class="sentence">{{SimplifiedSentence}}</div>
+    <div class="character">{{Simplified}} <span class="traditional">{{Traditional}}</span></div>
+    <div class="pinyin">{{PinyinNumbered}}</div>
+    <div class="meaning">{{English}}</div>
+
+    <div class="pinyin-sentence">{{SentencePinyin}}</div>
+    <div class="stroke-order">{{StrokeOrder}}</div>
+</div>
+
+<style>
+    /* (Keep same styles as front template) */
+    .chinese-card {
+        font-size: 1.5em;
+        text-align: center;
+        padding: 20px;
+    }
+    .character {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+    .traditional {
+        color: #666;
+        font-size: 0.8em;
+        margin-left: 10px;
+    }
+    .pinyin, .pinyin-sentence {
+        color: #e91e63;
+        margin-bottom: 15px;
+    }
+    .meaning {
+        font-style: italic;
+        margin-bottom: 20px;
+    }
+    .highlight {
+        background-color: #2196F3;
+        color: white;
+        padding: 0 2px;
+        border-radius: 3px;
+        box-shadow: 0 0 2px rgba(0,0,0,0.3);
+    }
+    .stroke-order {
+        margin-top: 20px;
+        font-size: 1.2em;
+    }
+    .audio-button {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-top: 15px;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+
+    function highlightWord() {
+        const sentenceElement = document.querySelector('.sentence');
+        if (!sentenceElement) return;
+
+        const sentence = sentenceElement.textContent;
+        const word = "{{Simplified}}";
+
+        if (!sentence || !word) return;
+
+        const regex = new RegExp(word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        const highlighted = sentence.replace(regex, `<span class="highlight">${word}</span>`);
+
+        sentenceElement.innerHTML = highlighted;
+    }
+
+    setTimeout(highlightWord, 10);
+    document.addEventListener('DOMContentLoaded', highlightWord);
+</script>
+
+<!-- Audio handling -->
+{{#SentenceAudio}}<audio src="{{SentenceAudio}}"></audio>{{/SentenceAudio}}
+{{^SentenceAudio}}{{#Audio}}<audio autoplay src="{{Audio}}"></audio>{{/Audio}}{{/SentenceAudio}}

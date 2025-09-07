@@ -1,110 +1,74 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import SendToAnkiButton from "@/components/SendToAnkiButton";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import SendToAnkiButton from "@/components/SendToAnkiButton.tsx";
+import { sampleList } from "@/__mocks__/sample-list.ts";
 import "@testing-library/jest-dom/vitest";
-import { vi, it, describe, beforeEach, expect } from "vitest";
-import exportAnkiCards from "@/lib/export-anki-cards.ts";
+import { useAnkiExportStore } from "@/stores/anki-export-store.ts";
+import { useAnkiExport } from "@/hooks/use-anki-export.ts";
 
-// Mock the browser API
-vi.mock("webextension-polyfill", () => ({
-  default: {
-    tabs: {
-      query: vi.fn(),
-      sendMessage: vi.fn(),
-    },
-  },
-}));
+describe("test SendToAnkiButton", () => {
+  const mockSendToAnki = vi.fn();
 
-// Mock the exportAnkiCards function
-vi.mock("@/lib/export-anki-cards", () => ({
-  default: vi.fn().mockResolvedValue(undefined),
-}));
-
-describe("SendToAnkiButton", () => {
   beforeEach(() => {
-    // Reset all mocks before each test
-    vi.clearAllMocks();
-
-    vi.mock("yanki-connect", () => ({
-      YankiConnect: vi.fn().mockImplementation(() => ({
-        deck: {
-          deckNames: vi.fn().mockResolvedValue(["Default"]),
-        },
-      })),
-    }));
-
-    // Setup default mock implementations
-    browser.tabs.query = vi.fn().mockResolvedValue([{ id: 123 }]);
-    browser.tabs.sendMessage = vi.fn().mockResolvedValue([]);
-  });
-
-  it("renders correctly when not loading", () => {
-    render(<SendToAnkiButton isSelected={false} />);
-    expect(screen.getByText("Send to Anki")).toBeInTheDocument();
-    expect(screen.queryByTestId("loader")).not.toBeInTheDocument();
-  });
-
-  it("filters selected items when isSelected is true", async () => {
-    vi.mock("yanki-connect", () => ({
-      YankiConnect: vi.fn().mockImplementation(() => ({
-        deck: {
-          deckNames: vi.fn().mockResolvedValue(["Default"]),
-        },
-      })),
-    }));
-
-    const mockVocabList = [
-      { isSelected: true, chinese: "你好" },
-      { isSelected: false, chinese: "谢谢" },
-    ];
-    browser.tabs.sendMessage = vi.fn().mockResolvedValue(mockVocabList);
-
-    render(<SendToAnkiButton isSelected={true} />);
-    fireEvent.click(screen.getByText("Send to Anki"));
-
-    await waitFor(() => {
-      expect(browser.tabs.sendMessage).toHaveBeenCalledWith(123, {
-        command: "getVocabList",
-      });
-      // Verify only selected items are processed
-      expect(exportAnkiCards).toHaveBeenCalledWith(
-        [{ isSelected: true, chinese: "你好" }],
-        expect.any(Function),
-        expect.any(Object),
-      );
+    vi.mock("@/stores/anki-export-store.ts");
+    vi.mock("@/hooks/use-anki-export.ts");
+    vi.mocked(useAnkiExportStore).mockReturnValue({
+      progress: 0,
+      status: "idle",
+      total: 0,
     });
+    vi.mocked(useAnkiExport).mockReturnValue({ sendToAnki: mockSendToAnki });
   });
 
-  it("updates progress during export", async () => {
-    const mockVocabList = [
-      { isSelected: true, chinese: "你好" },
-      { isSelected: true, chinese: "谢谢" },
-    ];
-    browser.tabs.sendMessage = vi.fn().mockResolvedValueOnce(mockVocabList);
-
-    render(<SendToAnkiButton isSelected={false} />);
-    fireEvent.click(screen.getByText("Send to Anki"));
-
-    await waitFor(() => {
-      expect(screen.getByText("Loading (0/2) ...")).toBeInTheDocument();
-    });
+  afterEach(() => {
+    vi.resetAllMocks();
   });
 
-  it("disables button during export", async () => {
-    vi.mock("yanki-connect", () => ({
-      YankiConnect: vi.fn().mockImplementation(() => ({
-        deck: {
-          deckNames: vi.fn().mockResolvedValue(["Default"]),
-        },
-      })),
-    }));
+  it("Renders disabled", async () => {
+    render(
+      <SendToAnkiButton
+        vocabList={sampleList}
+        disabled={true}
+        isSelected={false}
+      />,
+    );
 
-    render(<SendToAnkiButton isSelected={false} />);
-    const button = screen.getByText("Send to Anki");
-    fireEvent.click(button);
+    expect(screen.getByRole("button")).toBeDisabled();
+    expect(screen.getByRole("button")).toHaveTextContent("Send to Anki");
+  });
 
-    await waitFor(() => {
-      expect(button).toBeDisabled();
+  it("Renders enabled", async () => {
+    render(
+      <SendToAnkiButton
+        vocabList={sampleList}
+        disabled={false}
+        isSelected={false}
+      />,
+    );
+
+    expect(screen.getByRole("button")).not.toBeDisabled();
+    expect(screen.getByRole("button")).toHaveTextContent("Send to Anki");
+  });
+
+  it("Renders in progress", async () => {
+    vi.mocked(useAnkiExportStore).mockReturnValue({
+      progress: 0,
+      status: "inprogress",
+      total: 0,
     });
+
+    render(
+      <SendToAnkiButton
+        vocabList={sampleList}
+        disabled={false}
+        isSelected={false}
+      />,
+    );
+
+    const button = screen.getByRole("button");
     expect(button).not.toBeDisabled();
+    fireEvent.click(button);
+    expect(mockSendToAnki).toBeCalledWith(sampleList, false);
+    expect(button).toHaveTextContent("Loading (0/0)");
   });
 });

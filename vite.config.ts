@@ -10,6 +10,18 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 // https://vite.dev/config/
 export const sharedConfig: UserConfig = {
   assetsInclude: ["**/*.txt"],
+  optimizeDeps: {
+    include: ["webextension-polyfill"],
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+};
+
+export default defineConfig({
+  ...sharedConfig,
   plugins: [
     react(),
     viteStaticCopy({
@@ -29,28 +41,6 @@ export const sharedConfig: UserConfig = {
       dts: resolve("./src/auto-imports.d.ts"),
     }),
   ],
-  optimizeDeps: {
-    include: ["webextension-polyfill"],
-  },
-  test: {
-    globals: true,
-    environment: "jsdom",
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "lcov"],
-      include: ["**/src"],
-      exclude: ["**/src/components/ui/**"],
-    },
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-};
-
-export default defineConfig({
-  ...sharedConfig,
   build: {
     minify: false,
     emptyOutDir: false,

@@ -5,9 +5,11 @@ import { ThemeProvider } from "@/components/theme-provider.tsx";
 import SendToAnkiButton from "@/components/SendToAnkiButton.tsx";
 import CreateAPKGButton from "@/components/CreateAPKGButton.tsx";
 import { getConfig } from "@/config.ts";
+import { useVocabList } from "@/hooks/use-vocab-list.ts";
 
 function App() {
   const [isSelected, setIsSelected] = useState<boolean>(false);
+  const { vocabList, isLoading } = useVocabList();
   const { createApkgEnabled } = getConfig();
   return (
     <>
@@ -29,7 +31,11 @@ function App() {
           </div>
           <div className="grid grid-cols-1 space-y-2">
             {createApkgEnabled && <CreateAPKGButton />}
-            <SendToAnkiButton isSelected={isSelected} />
+            <SendToAnkiButton
+              isSelected={isSelected}
+              disabled={isLoading}
+              vocabList={vocabList || []}
+            />
           </div>
         </div>
       </ThemeProvider>
