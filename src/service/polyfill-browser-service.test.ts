@@ -4,6 +4,7 @@ import { Command } from "@/types/command.ts";
 import type { Browser } from "webextension-polyfill";
 import { mockDeep } from "vitest-mock-extended";
 import * as jsdom from "jsdom";
+import { sampleList } from "@/__mocks__/sample-list.ts";
 
 // Stub the global browser object
 const virtualConsole = new jsdom.VirtualConsole();
@@ -61,7 +62,24 @@ describe("getTemplate", () => {
         incognito: false,
       },
     ]);
-    await browserService.sendMessage(Command.GetVocabList);
+    await browserService.sendMessage(Command.Error, "test");
+    expect(mockBrowser.tabs.sendMessage).toBeCalled();
+  });
+
+  it("when browser service sends getVocab message successfully", async () => {
+    mockBrowser.tabs.sendMessage.mockResolvedValue(sampleList);
+    mockBrowser.tabs.query.mockResolvedValue([
+      {
+        id: 123,
+        index: 0,
+        highlighted: false,
+        active: false,
+        pinned: false,
+        incognito: false,
+      },
+    ]);
+    const result = await browserService.sendMessage(Command.GetVocabList);
+    expect(result).toEqual(sampleList);
     expect(mockBrowser.tabs.sendMessage).toBeCalled();
   });
 

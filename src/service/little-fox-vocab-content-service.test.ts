@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LittleFoxVocabContentService } from "@/service/little-fox-vocab-content-service.ts";
 import { level1Page, level3Page } from "@/__mocks__/littlefox-pages.ts";
 import { VocabListEntry } from "@/types/vocab-list-entry.ts";
+import { sampleList } from "@/__mocks__/sample-list.ts";
 
 const contentService = new LittleFoxVocabContentService();
 const level3Element = level3Page();
@@ -15,27 +16,9 @@ describe("getVocabList", () => {
   it("should load a level 3 page successfully", () => {
     document.body.appendChild(level3Element);
     const vocabList = contentService.getVocabList(document);
-    const expectedVocabList: VocabListEntry[] = [
-      {
-        isSelected: false,
-        audioUrl:
-          "http://cdn.littlefox.co.kr/cn/vocab/9/9429e0fa71eaab5b1faac92503c42cd5.mp3?56080212",
-        chinese: "销售员",
-        pinyin: "xiāoshòuyuán",
-        english: "salesman",
-        exampleSentence: "我的爸爸做了很长一段时间的旅行销售员。",
-      },
-      {
-        isSelected: false,
-        audioUrl:
-          "http://cdn.littlefox.co.kr/cn/vocab/f/f6b3086b28d744c32e339d6a7dd57ff0.mp3?32060117",
-        chinese: "旅行销售员",
-        pinyin: "lǚxíng xiāoshòuyuán",
-        english: "traveling salesman",
-        exampleSentence: "那个时候有很多的旅行销售员。",
-      },
-    ];
-    expect(vocabList).toEqual(expectedVocabList);
+    const expectedList = sampleList;
+    expectedList[1].isSelected = false;
+    expect(vocabList).toEqual(expectedList);
   });
 
   it("should load a level 1 page successfully", () => {

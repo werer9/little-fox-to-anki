@@ -4,22 +4,14 @@ import { mockDeep } from "vitest-mock-extended";
 import { YankiConnect } from "yanki-connect";
 import { YankiConnectService } from "@/service/yanki-connect-service.ts";
 import { exampleModel } from "@/__mocks__/yanki-connect-models.ts";
-import { VocabListEntry } from "@/types/vocab-list-entry.ts";
 import { AnkiConfig } from "@/types/anki-config.ts";
+import { sampleList } from "@/__mocks__/sample-list.ts";
 
 let yankiConnectService: AnkiService;
 const mockYankiConnect = mockDeep<YankiConnect>();
 let mockConsole = vi.spyOn(console, "log");
 
-const testEntry: VocabListEntry = {
-  isSelected: false,
-  audioUrl:
-    "http://cdn.littlefox.co.kr/cn/vocab/9/9429e0fa71eaab5b1faac92503c42cd5.mp3?56080212",
-  chinese: "销售员",
-  pinyin: "xiāoshòuyuán",
-  english: "salesman",
-  exampleSentence: "我的爸爸做了很长一段时间的旅行销售员。",
-};
+const testEntry = sampleList[0];
 
 const ankiConfig: AnkiConfig = {
   deckName: "test",

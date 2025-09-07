@@ -1,15 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import * as WebExtensionBrowser from "webextension-polyfill";
+import { mockDeep } from "vitest-mock-extended";
 import { handleVocabularyClick, viewVocab } from "./content";
+
+const mockBrowser = mockDeep<typeof WebExtensionBrowser>();
 
 // Mock the browser runtime API
 vi.mock("webextension-polyfill", () => ({
-  default: {
-    runtime: {
-      onMessage: {
-        addListener: vi.fn(),
-      },
-    },
-  },
+  ...mockBrowser,
+  default: mockBrowser,
 }));
 
 // Mock document and window methods
@@ -34,6 +33,7 @@ beforeEach(() => {
   window.alert = vi.fn();
   vi.stubGlobal("document", mockDocument);
   vi.stubGlobal("window", mockWindow);
+  vi.stubGlobal("browser", mockBrowser);
   vi.clearAllMocks();
 });
 
